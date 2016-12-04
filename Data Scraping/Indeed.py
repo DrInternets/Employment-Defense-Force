@@ -15,6 +15,7 @@ for x in range (0,40):
     'useragent' : "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36",
     'start' : i,
     'limit' : 25
+    'radius' : 25
     }
     i += 25
     search_response = client.search(**params)
