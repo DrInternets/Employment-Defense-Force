@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import json
 
 QUERY = 'Developer'
-LOCATION = 'tx' # location should be lowercase two letter state abbreviation (e.g. tx)
+LOCATION = 'tx' # location should be lowercase two letter state abbreviation (e.g. tx) or nothing for all states
 N_RESULTS = 1000
 DATA_FILE_NAME = 'linkedin_results_1000.json'
 
@@ -15,8 +15,9 @@ def get_html_page(start):
     request = 'https://www.linkedin.com/jobs/search?keywords='
     query = QUERY.replace(' ', '%20') # Correct spaces
     request += query
-    request += '&locationId=STATES.us.'
-    request += LOCATION
+    if len(LOCATION) > 0:
+        request += '&locationId=STATES.us.'
+        request += LOCATION
     request += '&orig=JSERP&start='
     request += str(start)
     request += '&count=25&trk=jobs_jserp_pagination_'
