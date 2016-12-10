@@ -1,32 +1,43 @@
+# Monster Jobs Board Scraper
+# Creator: Aaron Kingery
+
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import json
 
-def get_html_page(query, page):
+QUERY = 'Developer'
+LOCATION = 'Texas' # location should be full state name (e.g. Texas)
+N_RESULTS = 1000
+DATA_FILE_NAME = 'monster_results_1000.json'
+
+def get_html_page(page):
     request = 'https://www.monster.com/jobs/search/?q='
-    request += query # Enter '-' for any spaces
+    query = QUERY.replace(' ', '-')
+    request += query
+    request += '&where='
+    request += LOCATION
     request += '&page='
     request += str(page)
     
     return requests.get(request)
 
-def get_page_results(query, page):
-    r = get_html_page(query, page)
+def get_page_results(page):
+    r = get_html_page(page)
     soup = BeautifulSoup(r.text, 'html.parser')
     results = soup.find_all('script', {'type' : 'application/ld+json'}) # Results come in script tag
     results.pop(0) # Remove search info from results
     return results
 
-def get_n_results(query, n):
+def get_results():
     results = []
     current_page = 1
     # Add results page by page
-    while len(results) < n:
-        results += get_page_results(query, current_page)
+    while len(results) < N_RESULTS:
+        results += get_page_results(current_page)
         current_page += 1
     # Remove extra results from end
-    while len(results) > n:
+    while len(results) > N_RESULTS:
         results.pop(-1)
     return results
 
@@ -51,9 +62,9 @@ def make_json(results):
     json_string = json.dumps(json_string, sort_keys=True, indent=4)
     return json_string
     
-results = get_n_results('Developer', 1000)
+results = get_results()
 json_string = make_json(results)
 
-file = open('results.json', 'w')
+file = open(DATA_FILE_NAME, 'w')
 file.write(json_string)
 file.close()
